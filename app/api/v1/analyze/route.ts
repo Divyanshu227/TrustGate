@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { SpamEngine } from '../../../../../lib/SpamEngine';
+import { SpamEngine } from '@/lib/SpamEngine';
 
 export async function POST(req: Request) {
   try {
