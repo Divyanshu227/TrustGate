@@ -1,13 +1,17 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ShieldAlert, Zap, TerminalSquare, Code } from 'lucide-react';
+import { ShieldAlert, Zap, TerminalSquare, Code, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Home() {
   const [message, setMessage] = useState('');
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'demo' | 'api'>('demo');
+  const [copied, setCopied] = useState(false);
+
+  const endpointUrl = "https://api.trustgate.dev/v1/analyze";
 
   const analyzeSpam = async () => {
     if (!message) return;
@@ -33,6 +37,12 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(endpointUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -71,83 +81,120 @@ export default function Home() {
           TrustGate is the intelligent gateway against spam, phishing, and toxic content. Built for modern developers and enterprise systems.
         </motion.p>
         
+        {/* Tabs */}
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="w-full max-w-3xl glass-panel rounded-2xl p-6 md:p-8"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="flex justify-center gap-4 mb-8 relative z-10"
         >
-          <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
-            <TerminalSquare className="text-primary" />
-            <h2 className="text-xl font-semibold text-white">Live AI Analysis Demo</h2>
-          </div>
-          
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Paste a message here to scan for threats (e.g. 'Click here to win $5000')..."
-            className="w-full h-32 bg-black/50 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 transition-colors resize-none mb-4"
-          />
-          
           <button 
-            onClick={analyzeSpam}
-            disabled={loading || !message}
-            className="w-full bg-primary hover:bg-primary/80 text-background font-bold py-3 px-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            onClick={() => setActiveTab('demo')}
+            className={`px-6 py-2 rounded-full font-medium transition-all ${activeTab === 'demo' ? 'bg-primary text-background' : 'bg-white/5 text-gray-400 hover:text-white border border-white/10'}`}
           >
-            {loading ? 'Analyzing Neural Pathways...' : 'Scan for Threats'}
-            {!loading && <ShieldAlert size={18} />}
+            Live Demo
           </button>
-          
-          {result && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className={`mt-6 p-4 rounded-xl border ${result.classification === 'Spam' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-green-500/10 border-green-500/30 text-green-400'}`}
-            >
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-bold text-lg">{result.classification} Detected</span>
-                <span className="font-mono text-sm">{result.confidence}% Confidence</span>
-              </div>
-              <ul className="list-disc list-inside text-sm opacity-80">
-                {result.reasons.map((r: string, i: number) => <li key={i}>{r}</li>)}
-              </ul>
-            </motion.div>
-          )}
+          <button 
+            onClick={() => setActiveTab('api')}
+            className={`px-6 py-2 rounded-full font-medium transition-all ${activeTab === 'api' ? 'bg-primary text-background' : 'bg-white/5 text-gray-400 hover:text-white border border-white/10'}`}
+          >
+            API Documentation
+          </button>
         </motion.div>
 
-        {/* API Documentation Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="w-full max-w-3xl glass-panel rounded-2xl p-6 md:p-8 mt-8 mb-12 border border-white/10 bg-white/5 backdrop-blur-md"
-        >
-          <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
-            <Code className="text-primary" />
-            <h2 className="text-xl font-semibold text-white">API Reference</h2>
-          </div>
-          
-          <div className="space-y-6 text-gray-300">
-            <div>
-              <h3 className="text-lg font-medium text-white mb-2">Endpoint</h3>
-              <div className="flex items-center gap-4 bg-black/50 p-3 rounded-lg border border-white/10">
-                <span className="bg-primary/20 text-primary px-2 py-1 rounded text-sm font-bold">POST</span>
-                <code className="text-sm font-mono text-gray-300">/api/v1/analyze</code>
-              </div>
+        {/* Live Demo Section */}
+        {activeTab === 'demo' && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-3xl glass-panel rounded-2xl p-6 md:p-8"
+          >
+            <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+              <TerminalSquare className="text-primary" />
+              <h2 className="text-xl font-semibold text-white">Live AI Analysis Demo</h2>
             </div>
+            
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Paste a message here to scan for threats (e.g. 'Click here to win $5000')..."
+              className="w-full h-32 bg-black/50 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 transition-colors resize-none mb-4"
+            />
+            
+            <button 
+              onClick={analyzeSpam}
+              disabled={loading || !message}
+              className="w-full bg-primary hover:bg-primary/80 text-background font-bold py-3 px-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading ? 'Analyzing Neural Pathways...' : 'Scan for Threats'}
+              {!loading && <ShieldAlert size={18} />}
+            </button>
+            
+            {result && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className={`mt-6 p-4 rounded-xl border ${result.classification === 'Spam' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-green-500/10 border-green-500/30 text-green-400'}`}
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-bold text-lg">{result.classification} Detected</span>
+                  <span className="font-mono text-sm">{result.confidence}% Confidence</span>
+                </div>
+                <ul className="list-disc list-inside text-sm opacity-80">
+                  {result.reasons.map((r: string, i: number) => <li key={i}>{r}</li>)}
+                </ul>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
 
-            <div>
-              <h3 className="text-lg font-medium text-white mb-2">Request Body</h3>
-              <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono">
+        {/* API Documentation Section */}
+        {activeTab === 'api' && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-3xl glass-panel rounded-2xl p-6 md:p-8 border border-white/10 bg-white/5 backdrop-blur-md"
+          >
+            <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+              <Code className="text-primary" />
+              <h2 className="text-xl font-semibold text-white">API Reference</h2>
+            </div>
+            
+            <div className="space-y-6 text-gray-300">
+              <div>
+                <h3 className="text-lg font-medium text-white mb-2">Instructions</h3>
+                <p className="text-sm text-gray-400 mb-4">
+                  Integrate TrustGate's AI-powered threat detection into your application by making a POST request to the analyze endpoint. 
+                  Include your text content in the request body as a JSON object with a \`message\` property. Ensure you set the \`Content-Type: application/json\` header.
+                </p>
+                <h3 className="text-lg font-medium text-white mb-2">Endpoint</h3>
+                <div className="flex items-center gap-4 bg-black/50 p-3 rounded-lg border border-white/10 justify-between group">
+                  <div className="flex items-center gap-4 overflow-hidden">
+                    <span className="bg-primary/20 text-primary px-2 py-1 rounded text-sm font-bold shrink-0">POST</span>
+                    <code className="text-sm font-mono text-gray-300 truncate">{endpointUrl}</code>
+                  </div>
+                  <button 
+                    onClick={copyToClipboard}
+                    className="text-gray-400 hover:text-white transition-colors p-2 rounded-md hover:bg-white/10"
+                    title="Copy to clipboard"
+                  >
+                    {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium text-white mb-2">Request Body</h3>
+                <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono">
 {`{
   "message": "string (The content to analyze)"
 }`}
-              </pre>
-            </div>
+                </pre>
+              </div>
 
-            <div>
-              <h3 className="text-lg font-medium text-white mb-2">Response Example</h3>
-              <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono">
+              <div>
+                <h3 className="text-lg font-medium text-white mb-2">Response Example</h3>
+                <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono">
 {`{
   "classification": "Spam", // "Safe" | "Suspicious" | "Spam"
   "confidence": 85,
@@ -160,10 +207,11 @@ export default function Home() {
     "normalizedConfidence": 85
   }
 }`}
-              </pre>
+                </pre>
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
       </div>
     </main>
   );
