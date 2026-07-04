@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { ShieldAlert, Zap, TerminalSquare } from 'lucide-react';
+import { ShieldAlert, Zap, TerminalSquare, Code } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Home() {
@@ -113,6 +113,56 @@ export default function Home() {
               </ul>
             </motion.div>
           )}
+        </motion.div>
+
+        {/* API Documentation Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="w-full max-w-3xl glass-panel rounded-2xl p-6 md:p-8 mt-8 mb-12 border border-white/10 bg-white/5 backdrop-blur-md"
+        >
+          <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+            <Code className="text-primary" />
+            <h2 className="text-xl font-semibold text-white">API Reference</h2>
+          </div>
+          
+          <div className="space-y-6 text-gray-300">
+            <div>
+              <h3 className="text-lg font-medium text-white mb-2">Endpoint</h3>
+              <div className="flex items-center gap-4 bg-black/50 p-3 rounded-lg border border-white/10">
+                <span className="bg-primary/20 text-primary px-2 py-1 rounded text-sm font-bold">POST</span>
+                <code className="text-sm font-mono text-gray-300">/api/v1/analyze</code>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-white mb-2">Request Body</h3>
+              <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono">
+{`{
+  "message": "string (The content to analyze)"
+}`}
+              </pre>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-white mb-2">Response Example</h3>
+              <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono">
+{`{
+  "classification": "Spam", // "Safe" | "Suspicious" | "Spam"
+  "confidence": 85,
+  "threatScore": 8.5,
+  "reasons": [
+    "ML Model classified this text as Spam based on linguistic patterns."
+  ],
+  "mlDetails": {
+    "rawScore": 0.85,
+    "normalizedConfidence": 85
+  }
+}`}
+              </pre>
+            </div>
+          </div>
         </motion.div>
       </div>
     </main>
