@@ -1,102 +1,109 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+"use client";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
-
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
-  return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+import { motion } from 'framer-motion';
+import { ShieldAlert, Zap, TerminalSquare } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [message, setMessage] = useState('');
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.dev/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  const analyzeSpam = async () => {
+    if (!message) return;
+    setLoading(true);
+    // Mocking API call for now since we don't have the API running locally connected
+    setTimeout(() => {
+      const isSpam = message.toLowerCase().includes('win') || message.toLowerCase().includes('$');
+      setResult({
+        classification: isSpam ? 'Spam' : 'Safe',
+        confidence: isSpam ? 95 : 10,
+        reasons: isSpam ? ["Suspicious promotional language"] : ["Message appears safe"]
+      });
+      setLoading(false);
+    }, 800);
+  };
+
+  return (
+    <main className="min-h-screen relative overflow-hidden bg-background">
+      {/* Cyber Grid Background */}
+      <div className="absolute inset-0 bg-cyber-grid opacity-20 pointer-events-none" />
+      
+      {/* Glow Effects */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-12 flex flex-col items-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary mb-8"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.dev?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
+          <Zap size={16} />
+          <span className="text-sm font-medium tracking-wide uppercase">AI-Powered Threat Detection</span>
+        </motion.div>
+        
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-5xl md:text-7xl font-bold text-center mb-6 tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-500"
         >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          Protect Your Platform.<br/>Zero Compromise.
+        </motion.h1>
+        
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-gray-400 text-lg md:text-xl text-center max-w-2xl mb-12"
+        >
+          TrustGate is the intelligent gateway against spam, phishing, and toxic content. Built for modern developers and enterprise systems.
+        </motion.p>
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="w-full max-w-3xl glass-panel rounded-2xl p-6 md:p-8"
+        >
+          <div className="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+            <TerminalSquare className="text-primary" />
+            <h2 className="text-xl font-semibold text-white">Live AI Analysis Demo</h2>
+          </div>
+          
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Paste a message here to scan for threats (e.g. 'Click here to win $5000')..."
+            className="w-full h-32 bg-black/50 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-primary/50 transition-colors resize-none mb-4"
           />
-          Go to turborepo.dev →
-        </a>
-      </footer>
-    </div>
+          
+          <button 
+            onClick={analyzeSpam}
+            disabled={loading || !message}
+            className="w-full bg-primary hover:bg-primary/80 text-background font-bold py-3 px-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? 'Analyzing Neural Pathways...' : 'Scan for Threats'}
+            {!loading && <ShieldAlert size={18} />}
+          </button>
+          
+          {result && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className={`mt-6 p-4 rounded-xl border ${result.classification === 'Spam' ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-green-500/10 border-green-500/30 text-green-400'}`}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-bold text-lg">{result.classification} Detected</span>
+                <span className="font-mono text-sm">{result.confidence}% Confidence</span>
+              </div>
+              <ul className="list-disc list-inside text-sm opacity-80">
+                {result.reasons.map((r: string, i: number) => <li key={i}>{r}</li>)}
+              </ul>
+            </motion.div>
+          )}
+        </motion.div>
+      </div>
+    </main>
   );
 }
