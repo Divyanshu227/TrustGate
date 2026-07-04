@@ -12,16 +12,27 @@ export default function Home() {
   const analyzeSpam = async () => {
     if (!message) return;
     setLoading(true);
-    // Mocking API call for now since we don't have the API running locally connected
-    setTimeout(() => {
-      const isSpam = message.toLowerCase().includes('win') || message.toLowerCase().includes('$');
-      setResult({
-        classification: isSpam ? 'Spam' : 'Safe',
-        confidence: isSpam ? 95 : 10,
-        reasons: isSpam ? ["Suspicious promotional language"] : ["Message appears safe"]
+    
+    try {
+      const response = await fetch('/api/v1/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
       });
+      
+      if (!response.ok) throw new Error('API Error');
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      console.error(error);
+      setResult({
+        classification: 'Error',
+        confidence: 0,
+        reasons: ["Failed to connect to AI engine."]
+      });
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   return (
