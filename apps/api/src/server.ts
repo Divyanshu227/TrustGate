@@ -15,10 +15,15 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+import spamRoutes from './routes/spam';
+
 // Basic health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'TrustGate API', timestamp: new Date().toISOString() });
 });
+
+// API Routes
+app.use('/api/v1', spamRoutes);
 
 // Start server
 app.listen(port, () => {

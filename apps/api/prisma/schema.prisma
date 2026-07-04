@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  apiKeys   ApiKey[]
+}
+
+model ApiKey {
+  id        String     @id @default(uuid())
+  key       String     @unique
+  name      String
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  lastUsed  DateTime?
+  usage     ApiUsage[]
+  spamLogs  SpamLog[]
+}
+
+model ApiUsage {
+  id        String   @id @default(uuid())
+  apiKeyId  String
+  apiKey    ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  endpoint  String
+  createdAt DateTime @default(now())
+}
+
+model SpamLog {
+  id             String   @id @default(uuid())
+  apiKeyId       String
+  apiKey         ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+  message        String
+  source         String?
+  classification String   // "Spam" | "Safe" | "Suspicious"
+  confidence     Float
+  threatScore    Float
+  reasons        String   // Stored as JSON string
+  createdAt      DateTime @default(now())
+}
