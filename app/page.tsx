@@ -10,8 +10,29 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'demo' | 'api'>('demo');
   const [copied, setCopied] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
 
   const endpointUrl = "https://trustgateweb.netlify.app/api/v1/analyze";
+  
+  const aiIntegrationPrompt = `Please integrate the TrustGate Spam Analysis API into my project.
+
+Endpoint: POST https://trustgateweb.netlify.app/api/v1/analyze
+Headers: { "Content-Type": "application/json" }
+
+Request Body:
+{
+  "message": "string (the content to analyze)"
+}
+
+Response Example:
+{
+  "classification": "Spam", // "Safe" | "Suspicious" | "Spam"
+  "confidence": 85,
+  "threatScore": 8.5,
+  "reasons": ["Reason for classification"]
+}
+
+Create a reusable service or function that takes a text message, calls this endpoint, and returns the classification result.`;
 
   const analyzeSpam = async () => {
     if (!message) return;
@@ -161,6 +182,33 @@ export default function Home() {
             </div>
             
             <div className="space-y-6 text-gray-300">
+              {/* AI Prompt Section */}
+              <div className="bg-primary/5 border border-primary/20 p-5 rounded-xl">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                    <Zap size={18} className="text-primary" />
+                    AI Agent Prompt
+                  </h3>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(aiIntegrationPrompt);
+                      setPromptCopied(true);
+                      setTimeout(() => setPromptCopied(false), 2000);
+                    }}
+                    className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-colors px-3 py-1.5 rounded-md flex items-center gap-2 text-sm font-medium"
+                    title="Copy AI Prompt"
+                  >
+                    {promptCopied ? <Check size={16} /> : <Copy size={16} />}
+                    {promptCopied ? 'Copied!' : 'Copy Prompt'}
+                  </button>
+                </div>
+                <p className="text-sm text-gray-400 mb-4">
+                  Copy this prompt and paste it into ChatGPT, Claude, or any AI coding assistant to instantly integrate TrustGate into your codebase.
+                </p>
+                <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono text-gray-400 whitespace-pre-wrap">
+                  {aiIntegrationPrompt}
+                </pre>
+              </div>
               <div>
                 <h3 className="text-lg font-medium text-white mb-2">Instructions</h3>
                 <p className="text-sm text-gray-400 mb-4">
