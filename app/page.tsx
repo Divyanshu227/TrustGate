@@ -11,7 +11,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'demo' | 'api'>('demo');
   const [copied, setCopied] = useState(false);
 
-  const endpointUrl = "https://api.trustgate.dev/v1/analyze";
+  const endpointUrl = "https://trustgateweb.netlify.app/api/v1/analyze";
 
   const analyzeSpam = async () => {
     if (!message) return;
@@ -181,6 +181,15 @@ export default function Home() {
                     {copied ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
                   </button>
                 </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium text-white mb-2">Headers</h3>
+                <pre className="bg-black/50 p-4 rounded-lg border border-white/10 overflow-x-auto text-sm font-mono">
+{`{
+  "Content-Type": "application/json"
+}`}
+                </pre>
               </div>
 
               <div>
