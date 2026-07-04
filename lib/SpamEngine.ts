@@ -1,4 +1,6 @@
 import natural from 'natural';
+import fs from 'fs';
+import path from 'path';
 
 export class SpamEngine {
   private static classifier: natural.BayesClassifier | null = null;
@@ -7,29 +9,38 @@ export class SpamEngine {
   private static initialize() {
     if (this.isTrained) return;
     
-    // Initialize Naive Bayes Classifier
-    this.classifier = new natural.BayesClassifier();
-    
-    // Training Data: Spam
-    this.classifier.addDocument("Congratulations! You won the lottery. Click here to claim your $5000 prize.", "Spam");
-    this.classifier.addDocument("Urgent: Your account will be locked. Please verify your credentials immediately.", "Spam");
-    this.classifier.addDocument("Free money! Earn $500 a day working from home. Join now.", "Spam");
-    this.classifier.addDocument("Claim your free iPhone today. Offer ends in 10 minutes.", "Spam");
-    this.classifier.addDocument("You have been selected for a special loan offer. Low interest guaranteed.", "Spam");
-    this.classifier.addDocument("Buy cheap viagra and cialis online.", "Spam");
-    this.classifier.addDocument("Invest in crypto today and 100x your returns guaranteed.", "Spam");
-    
-    // Training Data: Safe
-    this.classifier.addDocument("Hey, are we still meeting for lunch at 12?", "Safe");
-    this.classifier.addDocument("Please find attached the financial report for Q3.", "Safe");
-    this.classifier.addDocument("I loved the new movie! We should watch it again.", "Safe");
-    this.classifier.addDocument("Can you review my pull request when you have a moment?", "Safe");
-    this.classifier.addDocument("Let's schedule a call to discuss the project architecture.", "Safe");
-    this.classifier.addDocument("Happy birthday! Hope you have a wonderful day.", "Safe");
-    this.classifier.addDocument("The package has been delivered to your front door.", "Safe");
+    try {
+      const modelPath = path.join(process.cwd(), 'lib', 'classifier.json');
+      const rawData = fs.readFileSync(modelPath, 'utf8');
+      this.classifier = natural.BayesClassifier.restore(JSON.parse(rawData));
+      this.isTrained = true;
+      console.log("Successfully loaded pre-trained model from classifier.json.");
+    } catch (err) {
+      console.warn("Could not load classifier.json, falling back to basic training.");
+      // Initialize Naive Bayes Classifier
+      this.classifier = new natural.BayesClassifier();
+      
+      // Training Data: Spam
+      this.classifier.addDocument("Congratulations! You won the lottery. Click here to claim your $5000 prize.", "Spam");
+      this.classifier.addDocument("Urgent: Your account will be locked. Please verify your credentials immediately.", "Spam");
+      this.classifier.addDocument("Free money! Earn $500 a day working from home. Join now.", "Spam");
+      this.classifier.addDocument("Claim your free iPhone today. Offer ends in 10 minutes.", "Spam");
+      this.classifier.addDocument("You have been selected for a special loan offer. Low interest guaranteed.", "Spam");
+      this.classifier.addDocument("Buy cheap viagra and cialis online.", "Spam");
+      this.classifier.addDocument("Invest in crypto today and 100x your returns guaranteed.", "Spam");
+      
+      // Training Data: Safe
+      this.classifier.addDocument("Hey, are we still meeting for lunch at 12?", "Safe");
+      this.classifier.addDocument("Please find attached the financial report for Q3.", "Safe");
+      this.classifier.addDocument("I loved the new movie! We should watch it again.", "Safe");
+      this.classifier.addDocument("Can you review my pull request when you have a moment?", "Safe");
+      this.classifier.addDocument("Let's schedule a call to discuss the project architecture.", "Safe");
+      this.classifier.addDocument("Happy birthday! Hope you have a wonderful day.", "Safe");
+      this.classifier.addDocument("The package has been delivered to your front door.", "Safe");
 
-    this.classifier.train();
-    this.isTrained = true;
+      this.classifier.train();
+      this.isTrained = true;
+    }
   }
 
   public static analyze(message: string) {
