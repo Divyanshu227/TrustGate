@@ -43,6 +43,10 @@ sequenceDiagram
 - **NLP Library:** [natural](https://github.com/NaturalNode/natural)
 - **Database / ORM:** PostgreSQL, Redis, Prisma (configured via Docker Compose)
 
+## 📊 Dataset
+
+The Machine Learning model was trained on the [Spam Email Dataset](https://www.kaggle.com/datasets/jackksoncsie/spam-email-dataset) from Kaggle.
+
 ## 🏁 Getting Started
 
 ### Prerequisites
